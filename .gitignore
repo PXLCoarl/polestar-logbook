@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# .env File
+.env
+
+# JSON Files
+
+*.json
+
+# Database
+instance/app.db
+instance/*.db
+
+# Flask
+webserver/templates/
+webserver/maps/
+
+# VS Code
+.vscode/
