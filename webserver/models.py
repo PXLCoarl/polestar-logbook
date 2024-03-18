@@ -22,12 +22,16 @@ class TripData(db.Model):
     timestamp: int = db.Column(db.Integer)
     trip_id: str = db.Column(db.String(36), db.ForeignKey('trips.trip_id'))
     trip = db.relationship('Trips', back_populates='trip_data')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    user = db.relationship('User', backref='trip_data')
         
 class Trips(db.Model):
-    id: int = db.Column(db.Integer, primary_key = True)
+    row: int = db.Column(db.Integer, primary_key = True)
     trip_id: str = db.Column(db.String(36))
     trip_name: str = db.Column(db.String(100))
     trip_data = db.relationship('TripData', back_populates='trip')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    #user = db.relationship('User', backref='user_trips')
     
 class User(UserMixin, db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
@@ -36,7 +40,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(100))
     webhook = db.Column(db.String(5), unique=True)
     api_key = db.Column(db.String(25), unique=True)
-    
+    trips = db.relationship('Trips', backref='user', lazy=True)
     user_settings = db.relationship('UserSettings', backref='user', uselist=False, lazy=True)
     def get_id(self):
         return str(self.user_id)

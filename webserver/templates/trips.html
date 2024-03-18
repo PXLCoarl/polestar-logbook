@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="columns">
+    <div class="column is-4 is-offset-4">
+        <h1 class="title is-unselectable">Welcome back, {{ username }}!</h3>
+        <h2 class="subtitle is-unselectable">Here are your trips:</h2>
+    </div>
+</div>
+{% for trip in trips %}
+<div class="columns">
+    <div class="column"></div>
+    <div class="column has-text-centered">
+         <p>{{ trip.trip_name }}</p>
+     </div>
+    <div class="column"></div>
+ </div>
+ {% endfor %}
+
+{% endblock %}

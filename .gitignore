@@ -15,11 +15,11 @@ ENV/
 *.json
 
 # Database
+instance/
 instance/app.db
 instance/*.db
 
 # Flask
-webserver/templates/
 webserver/maps/
 
 # VS Code

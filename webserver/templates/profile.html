@@ -1,0 +1,29 @@
+<style>
+    /* Hide the text */
+    .hidden-text {
+        display: none;
+    }
+    /* Reveal the text when the checkbox is checked */
+    .reveal-text:checked + .hidden-text {
+        display: block;
+    }
+</style>
+
+
+{% extends "base.html" %}
+{% block content %}
+<div class="columns">
+    <div class="column is-4 is-offset-4">
+        <h1 class="title is-unselectable">Welcome back, {{ username }}!</h3>
+    </div>
+</div>
+
+<div class="columns">
+    <div class="column has-text-centered">
+         <label for="reveal-checkbox">Click to reveal your personal webhook:</label>
+         <input type="checkbox" id="reveal-checkbox" class="reveal-text">
+         <p class="hidden-text has-text-danger">{{ url }}</p>
+     </div>
+ </div>
+
+{% endblock %}
