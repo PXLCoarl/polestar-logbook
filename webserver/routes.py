@@ -56,7 +56,7 @@ def webhooks(endpoint):
     time_difference = (datetime.fromtimestamp(data['timestamp'] / 1000) - datetime.fromtimestamp(last_timestamp / 1000))
     if time_difference >= timedelta(minutes=user_settings.trip_delay):
         trip_uuid: str = str(uuid.uuid4())
-        trip = Trips(trip_id=trip_uuid, trip_name=f'{datetime.now().strftime('%d-%m-%Y %H:%M:%S')}', user_id=user_id)
+        trip = Trips(trip_id=trip_uuid, trip_name=f"{datetime.now().strftime('%d-%m-%Y %H:%M:%S')}", user_id=user_id)
         db.session.add(trip)
     else:
         trip_uuid: str = last_entry.trip_id
