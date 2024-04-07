@@ -8,10 +8,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Polestar Logbook</title>
     <link rel="icon" type="image/svg+xml" href="{{url_for('static', filename='favicon.svg')}}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.0/css/bulma.min.css" />
 </head>
 
 <body>
+    <section>
+        <nav class="navbar">
+            <div class="container">
+                <div class="navbar-brand">
+                    <a href="{{ url_for('routes.index') }}" class="navbar-item">
+                        <span class="icon-text">
+                            <span class="icon">
+                                <i class="fa-solid fa-house"></i>
+                            </span>
+                            <span>Polestar</span>
+                          </span>
+                    </a>
+                </div>
+                <div id="navbarMenuHeroA" class="navbar-menu">
+                    <div class="navbar-end">
+                        <!--<a href="{{ url_for('routes.index') }}" class="navbar-item">
+                            Home
+                        </a>-->
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('routes.trips') }}" class="navbar-item">
+                            <span class="icon-text">
+                                <span class="icon">
+                                    <i class="fa-solid fa-car"></i>
+                                </span>
+                                <span>Fahrtenbuch</span>
+                        </a>
+                        {% endif %}
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('routes.profile') }}" class="navbar-item">
+                            <span class="icon-text">
+                                <span class="icon">
+                                    <i class="fa-solid fa-gear"></i>
+                                </span>
+                            </span>
+                        </a>
+                        {% endif %}
+                        {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('auth.signup') }}" class="navbar-item">
+                            <i class="fa-solid fa-user-plus"></i>
+                            <!--CREATE NEW ACCOUNT (WE DONT WANT THAT HERE)-->
+                        </a>
+                        <a href="{{ url_for('auth.login') }}" class="navbar-item">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                        </a>
+                        {% endif %}
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('auth.logout') }}" class="navbar-item">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </section>
     <section>
         <div class="hero-body">
             <div class="container has-text-centered">
