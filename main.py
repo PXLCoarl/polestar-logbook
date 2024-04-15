@@ -1,7 +1,7 @@
 from utilities import logger, get_local_ip
 from webserver import webserver
 from waitress import serve
-import argparse, os
+import argparse, os, logging
 
 
 if __name__ == '__main__':
@@ -12,6 +12,11 @@ if __name__ == '__main__':
     ip = get_local_ip()
     port = int(os.getenv('WEBSERVER_PORT'))
     if args.debug == "true":
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format='%(asctime)s [%(levelname)s]: %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
         app.run(debug=True, host=ip, port=port)
     elif args.debug == "false":
         serve(app, port=port, host=ip)

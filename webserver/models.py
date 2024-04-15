@@ -31,7 +31,9 @@ class Trips(db.Model):
     trip_name: str = db.Column(db.String(100))
     trip_data = db.relationship('TripData', back_populates='trip')
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    trash = db.Column(db.Boolean, default=False)
     #user = db.relationship('User', backref='user_trips')
+    
     
 class User(UserMixin, db.Model):
     user_id = db.Column(db.Integer, primary_key=True)

@@ -1,20 +1,111 @@
 {% extends "base.html" %}
 
 {% block content %}
+<section>
 <div class="columns">
     <div class="column is-4 is-offset-4">
-        <h1 class="title is-unselectable">Welcome back, {{ username }}!</h3>
-        <h2 class="subtitle is-unselectable">Here are your trips:</h2>
+        <h1 class="title is-unselectable"> </h3>
+        <h2 class="subtitle is-unselectable">Trips from {{ username }}:</h2>
     </div>
 </div>
-{% for trip in trips %}
+</section>
+<section><br>
+  {% for trip in trips %}
 <div class="columns">
-    <div class="column"></div>
-    <div class="column has-text-centered">
-         <a href='/map/{{ trip.trip_id }}'>{{ trip.trip_name }}</a>
-     </div>
-    <div class="column"></div>
- </div>
+    <div class="column"><input type="checkbox" id="{{ trip.trip_id }}"></div>
+    <div class="column is-4">
+        <span id="tripName_{{ trip.trip_id }}">
+            <a href='/map/{{ trip.trip_id }}'>{{ trip.trip_name }}</a>
+        </span>
+        <input class="input" type="text" id="TripNameInput_{{ trip.trip_id }}" style="display: none;">
+    </div>
+    <div class="column"> 
+        <div class="buttons">
+            <button id="PrimaryButton_{{ trip.trip_id }}" class="button is-white is-outlined" onclick="editTripName('{{ trip.trip_id }}')">
+              <span class="icon">
+                <i id="PrimaryButtonIcon_{{ trip.trip_id }}" class="fa-solid fa-pen-to-square"></i>
+              </span>
+              <span id="PrimaryButtonText_{{ trip.trip_id }}">Edit</span>
+            </button>
+            <button id="SecondaryButton_{{ trip.trip_id }}" class="button is-danger is-outlined" onclick="deleteTrip('{{ trip.trip_id }}')">
+              <span class="icon">
+                  <i id="SecondaryButtonIcon_{{ trip.trip_id }}" class="fa-solid fa-trash"></i>
+              </span>
+              <span id="SecondaryButtonText_{{ trip.trip_id }}">Delete</span>
+          </button>          
+          </div>
+    </div>
+</div>
  {% endfor %}
+<script>
+  function editTripName(tripId) {
+    var tripNameElement = document.getElementById('tripName_' + tripId);
+    var inputTripNameElement = document.getElementById('TripNameInput_' + tripId);
+
+    var primaryButton = document.getElementById('PrimaryButton_' + tripId);
+    var primaryButtonText = document.getElementById('PrimaryButtonText_'+tripId);
+    var primaryButtonIcon = document.getElementById('PrimaryButtonIcon_'+tripId);
+    var secondaryButton = document.getElementById('SecondaryButton_' + tripId);
+    var secondaryButtonIcon = document.getElementById('SecondaryButtonIcon_' + tripId);
+    var secondaryButtonText = document.getElementById('SecondaryButtonText_' + tripId);
+
+    primaryButton.classList.remove('is-outlined');
+    primaryButton.classList.remove('is-white');
+    primaryButton.classList.add('is-primary');
+    primaryButtonIcon.classList.remove('fa-pen-to-square');
+    primaryButtonIcon.classList.add('fa-check');
+    primaryButtonText.innerText = 'Confirm';
+    secondaryButton.classList.remove('is-outlined');
+    secondaryButtonIcon.classList.remove('fa-trash');
+    secondaryButtonIcon.classList.add('fa-ban');
+    secondaryButtonText.innerText = 'Cancel';
+
+    
+    tripNameElement.style.display = 'none';
+    inputTripNameElement.style.display = 'inline-block';
+    //inputTripNameElement.value = tripNameElement.innerText;
+    inputTripNameElement.focus();
+    primaryButton.onclick = function() {
+      // Redirect to the Flask route with the new name
+      var newName = inputTripNameElement.value;
+      window.location.href = '/api/changename/' + tripId + '?name=' + encodeURIComponent(newName);
+    };
+    secondaryButton.onclick = function() {
+      location.reload();
+    }; 
+}
+
+
+function deleteTrip(tripId) {
+  var tripNameElement = document.getElementById('tripName_' + tripId);
+  var primaryButton = document.getElementById('PrimaryButton_' + tripId);
+  var primaryButtonText = document.getElementById('PrimaryButtonText_'+tripId);
+  var primaryButtonIcon = document.getElementById('PrimaryButtonIcon_'+tripId);
+  var secondaryButton = document.getElementById('SecondaryButton_' + tripId);
+  var secondaryButtonIcon = document.getElementById('SecondaryButtonIcon_' + tripId);
+  var secondaryButtonText = document.getElementById('SecondaryButtonText_' + tripId);
+
+  primaryButton.classList.remove('is-outlined');
+  primaryButton.classList.remove('is-white');
+  primaryButton.classList.add('is-primary');
+  primaryButtonIcon.classList.remove('fa-pen-to-square');
+  primaryButtonIcon.classList.add('fa-check');
+  primaryButtonText.innerText = 'Confirm';
+  secondaryButton.classList.remove('is-outlined');
+  secondaryButtonIcon.classList.remove('fa-trash');
+  secondaryButtonIcon.classList.add('fa-ban');
+  secondaryButtonText.innerText = 'Cancel';
+
+
+  primaryButton.onclick = function() {
+      window.location.href = 'api/deletetrip/' + tripId;
+  };
+  secondaryButton.onclick = function() {
+    location.reload();
+  }; 
+}
+
+</script>
+</section>
 
 {% endblock %}

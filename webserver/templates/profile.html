@@ -1,29 +1,301 @@
-<style>
-    /* Hide the text */
-    .hidden-text {
-        display: none;
-    }
-    /* Reveal the text when the checkbox is checked */
-    .reveal-text:checked + .hidden-text {
-        display: block;
-    }
-</style>
-
-
 {% extends "base.html" %}
-{% block content %}
-<div class="columns">
-    <div class="column is-4 is-offset-4">
-        <h1 class="title is-unselectable">Welcome back, {{ username }}!</h3>
+{% block settings %}
+<section class="pl-5 mt-5">
+    <div class="columns">
+        <div id="sidebar" class="column is-2">
+            <aside class="menu">
+                <p class="menu-label">General</p>
+                <ul class="menu-list">
+                <li><a id="webhook" onclick="showContent(this.id)">Webhook</a></li>
+                <li><a id="settings" onclick="showContent(this.id)">Settings</a></li>
+                </ul>
+                <p class="menu-label" >Account</p>
+                <ul class="menu-list">
+                <li><a id="email" onclick="showContent(this.id)">Email</a></li>
+                <li><a id="password" onclick="showContent(this.id)">Password</a></li>
+                </ul>
+                <p class="menu-label">Misc</p>
+                <ul class="menu-list">
+                <li><a id="trash" onclick="showContent(this.id)">Recycle Bin</a></li>
+                <li><a>Spacer</a></li>
+                <li><a>Spacer</a></li>
+                </ul>
+            </aside>
+        </div>
+        <div id="content" class="column">
+        </div>
+        <div class="column is-2"></div>
     </div>
-</div>
+</section>
 
-<div class="columns">
-    <div class="column has-text-centered">
-         <label for="reveal-checkbox">Click to reveal your personal webhook:</label>
-         <input type="checkbox" id="reveal-checkbox" class="reveal-text">
-         <p class="hidden-text has-text-danger">{{ url }}</p>
-     </div>
- </div>
+<script>
+    function showContent(id) {
+        var sidebarElements = document.querySelectorAll('#sidebar a');
+
+        // Loop through all sidebar elements
+        sidebarElements.forEach(function(element) {
+            // Check if the element is not the one that was clicked
+            if (element.id !== id) {
+                // Remove the 'is-active' class
+                element.classList.remove('is-active');
+            }
+        });
+        var SidebarElement = document.getElementById(id);
+
+        SidebarElement.classList.add('is-active');
+
+        // Update content based on the clicked sidebar element
+        var contentElement = document.getElementById('content');
+        // Example: Change text content based on the clicked sidebar element
+        if (id === 'webhook') {
+            const domain = getCurrentDomain();
+            contentElement.innerHTML = `
+            <section>
+                <div class="columns">
+                    <div class="column has-text-centered">
+                        <h1 class="title is-unselectable">Welcome back, {{ user.name }}!</h3>
+                    </div>
+                </div>
+                    <div class="columns">
+                        <div class="column has-text-centered">
+                            <div class="field">
+                                <div class="control">
+                                  <label class="checkbox">
+                                    <input id="checkbox" onclick="showWebhook()" type="checkbox">
+                                    Click to reveal your webhook
+                                  </label>
+                                </div>
+                            </div>
+                            <div class="field is-grouped">
+                                
+                                    <div class="control is-expanded">
+                                        <input id="webhook-text" class="input is-skeleton is-unselectable" type="text" value="${domain}/webhooks/{{ user.webhook }}?api_key={{ user.api_key }}">
+                                    </div>
+
+                                <div class="control">
+                                    <button onclick="copyWebhook()" class="button is-info">
+                                      Select
+                                    </button>
+                                  </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;            
+
+        } else if (id === 'settings') {
+            contentElement.innerHTML = '<h1>Settings Content</h1><p>More <em>HTML</em> content here.</p>';
+
+        } else if (id === 'email') {
+            contentElement.innerHTML = `
+            <div class"columns">
+                <div class="column has-text-centered">
+                    <h1 class="subtitle is-unselectable">Set New Email</h1>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column is-half is-offset-one-quarter">
+                    <div class="field">
+                        <label class="label">New email</label>
+                        <div class="control has-icons-left">
+                          <input class="input" type="email" placeholder="example@domain.com">
+                          <span class="icon is-left">
+                            <i class="fas fa-envelope"></i>
+                          </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Confirm email</label>
+                        <div class="control has-icons-left">
+                          <input class="input" type="email" placeholder="example@domain.com">
+                          <span class="icon is-left">
+                            <i class="fas fa-envelope"></i>
+                          </span>
+                        </div>
+                    </div>
+                    <div class="field is-grouped is-grouped-right">
+                        <p class="control">
+                          <button class="button is-primary">
+                            Submit
+                          </button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            `;
+
+        } else if (id === 'password') {
+
+            contentElement.innerHTML = `
+            <div class"columns">
+                <div class="column has-text-centered">
+                    <h1 class="subtitle is-unselectable">Set New Password</h1>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column is-half is-offset-one-quarter">
+                    <div class="field">
+                        <label class="label">Current password</label>
+                        <div class="control has-icons-left">
+                          <input class="input" type="password" placeholder="password">
+                          <span class="icon is-left">
+                            <i class="fas fa-lock"></i>
+                          </span>
+                        </div>
+                    </div>
+                    <hr>  
+                    <div class="field">
+                        <label class="label">New password</label>
+                        <div class="control has-icons-left">
+                          <input class="input" type="password" placeholder="password">
+                          <span class="icon is-left">
+                            <i class="fas fa-lock"></i>
+                          </span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Confirm new password</label>
+                        <div class="control has-icons-left">
+                          <input class="input" type="password" placeholder="password">
+                          <span class="icon is-left">
+                            <i class="fas fa-lock"></i>
+                          </span>
+                        </div>
+                    </div>
+                    <div class="field is-grouped is-grouped-right">
+                        <p class="control">
+                          <button class="button is-primary">
+                            Submit
+                          </button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+        else if (id === 'trash') {
+            contentElement.innerHTML = `
+            <div class"columns mb-5">
+                <div class="column has-text-centered">
+                    <h1 class="subtitle is-unselectable">Recycle Bin</h1>
+                </div>
+            </div>
+            {% for trip in trash %}
+            <div class="columns">
+                <div class="column is-half is-offset-one-quarter">
+                    <span id="tripName_{{ trip.trip_id }}">
+                        <a href='/map/{{ trip.trip_id }}'>{{ trip.trip_name }}</a>
+                    </span>
+                </div>
+                <div class="column is-4"> 
+                    <div class="buttons">
+                        <button id="PrimaryButton_{{ trip.trip_id }}" class="button is-white is-outlined" onclick="Restore('{{ trip.trip_id }}')">
+                          <span class="icon">
+                            <i id="PrimaryButtonIcon_{{ trip.trip_id }}" class="fa-solid fa-trash-can-arrow-up"></i>
+                          </span>
+                          <span id="PrimaryButtonText_{{ trip.trip_id }}">Restore</span>
+                        </button>
+                        <button id="SecondaryButton_{{ trip.trip_id }}" class="button is-danger is-outlined" onclick="Delete('{{ trip.trip_id }}')">
+                          <span class="icon">
+                              <i id="SecondaryButtonIcon_{{ trip.trip_id }}" class="fa-solid fa-trash"></i>
+                          </span>
+                          <span id="SecondaryButtonText_{{ trip.trip_id }}">Delete</span>
+                      </button>          
+                      </div>
+                </div>
+            </div>
+             {% endfor %}
+            `;
+        }
+    }
+
+    function Restore(tripId) {
+        var primaryButton = document.getElementById('PrimaryButton_' + tripId);
+        var primaryButtonText = document.getElementById('PrimaryButtonText_'+tripId);
+        var primaryButtonIcon = document.getElementById('PrimaryButtonIcon_'+tripId);
+        var secondaryButton = document.getElementById('SecondaryButton_' + tripId);
+        var secondaryButtonIcon = document.getElementById('SecondaryButtonIcon_' + tripId);
+        var secondaryButtonText = document.getElementById('SecondaryButtonText_' + tripId);
+      
+        primaryButton.classList.remove('is-outlined');
+        primaryButton.classList.remove('is-white');
+        primaryButton.classList.add('is-primary');
+        primaryButtonIcon.classList.remove('fa-pen-to-square');
+        primaryButtonIcon.classList.add('fa-check');
+        primaryButtonText.innerText = 'Confirm';
+        secondaryButton.classList.remove('is-outlined');
+        secondaryButtonIcon.classList.remove('fa-trash');
+        secondaryButtonIcon.classList.add('fa-ban');
+        secondaryButtonText.innerText = 'Cancel';
+      
+      
+        primaryButton.onclick = function() {
+            window.location.href = 'api/restoretrip/' + tripId;
+        };
+        secondaryButton.onclick = function() {
+          location.reload();
+        }; 
+      }
+    function Delete(tripId) {
+        var primaryButton = document.getElementById('PrimaryButton_' + tripId);
+        var primaryButtonText = document.getElementById('PrimaryButtonText_'+tripId);
+        var primaryButtonIcon = document.getElementById('PrimaryButtonIcon_'+tripId);
+        var secondaryButton = document.getElementById('SecondaryButton_' + tripId);
+        var secondaryButtonIcon = document.getElementById('SecondaryButtonIcon_' + tripId);
+        var secondaryButtonText = document.getElementById('SecondaryButtonText_' + tripId);
+      
+        primaryButton.classList.remove('is-outlined');
+        primaryButton.classList.remove('is-white');
+        primaryButton.classList.add('is-primary');
+        primaryButtonIcon.classList.remove('fa-pen-to-square');
+        primaryButtonIcon.classList.add('fa-check');
+        primaryButtonText.innerText = 'Confirm';
+        secondaryButton.classList.remove('is-outlined');
+        secondaryButtonIcon.classList.remove('fa-trash');
+        secondaryButtonIcon.classList.add('fa-ban');
+        secondaryButtonText.innerText = 'Cancel';
+      
+      
+        primaryButton.onclick = function() {
+            window.location.href = 'api/deletetrip/' + tripId;
+        };
+        secondaryButton.onclick = function() {
+          location.reload();
+        };
+    }
+    function copyWebhook() {
+        var copyText = document.getElementById("webhook-text");
+    
+        // Select the text inside the input field
+        copyText.select();
+        
+        // For mobile devices, set the selection range to cover the entire text
+        //copyText.setSelectionRange(0, copyText.value.length);
+    
+        // Use the Clipboard API to write the selected text to the clipboard
+        navigator.clipboard.writeText(copyText.value)
+            .then(function() {
+                // Show an alert to indicate that the text was copied successfully
+                alert("Copied the webhook URL: " + copyText.value);
+            })
+            .catch(function(err) {
+                // Handle any errors that may occur while copying
+                console.error('Failed to copy text: ', err);
+            });
+    }
+
+    function getCurrentDomain() {
+        var protocol = window.location.protocol;
+        var hostname = window.location.hostname;
+        var port = window.location.port;
+        return protocol + "//" + hostname + (port ? ":" + port : "");
+    }
+    function showWebhook() {
+        checkbox = document.getElementById('checkbox')
+        var WebhookText = document.getElementById('webhook-text');
+        WebhookText.classList.toggle('is-skeleton');
+        WebhookText.classList.toggle('is-unselectable');
+    }
+</script>
 
 {% endblock %}

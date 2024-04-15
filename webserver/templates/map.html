@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="columns">
+    <div class="column is-4 is-offset-4">
+        <p class="is-unselectable">Trip {{ trip.trip_name }}</p>
+    </div>
+</div>
+<div class="columns">
+    <div class="column">
+        {{ iframe|safe }}
+    </div>
+    <div class="column">
+        <p class="subtitle">Statistiken</p>
+        <div class="fixed-grid has-2-cols">
+            <div class="grid">
+                <div class="cell has-text-right">Dauer:</div>
+                <div class="cell has-text-left">{{ trip_stats.get('length') }}</div>
+                
+                <div class="cell has-text-right">Strecke:</div>
+                <div class="cell has-text-left">{{ trip_stats.get('distance') }} km</div>
+                
+                <div class="cell has-text-right">⌀ Tempo:</div>
+                <div class="cell has-text-left">{{ trip_stats.get('mean_speed') }} km/h</div>
+                
+                <div class="cell has-text-right">Verbrauch:</div>
+                <div class="cell has-text-left">{{ trip_stats.get('usage')/1000 }} kWh</div>
+                
+                <div class="cell has-text-right">⌀ Verbrauch:</div>
+                <div class="cell has-text-left">{{ trip_stats.get('kW/100km') }} kW/100km</div>
+                
+                <div class="cell has-text-right">⌀ Verbrauch:</div>
+                <div class="cell has-text-left">{{ trip_stats.get('kWh/100km') }} kWh/100km</div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
