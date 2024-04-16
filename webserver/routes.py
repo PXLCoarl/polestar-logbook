@@ -32,17 +32,23 @@ def trips() -> str:
     user: User = current_user
     trips: list[Trips] = user.trips
     trips = [trip for trip in trips if not trip.trash]
+    trips.sort(key=lambda x: x.trip_data[0].timestamp, reverse=True)
     return render_template("trips.html", username=user.name, trips=trips)
 
+@login_required
 @routes.route('/map/<trip_id>')
 def debug_map(trip_id: str) -> folium.Map:
     trip: Trips = Trips.query.filter_by(trip_id=trip_id).first()
     trip_data: list[TripData] = trip.trip_data
-    #trip_data.sort(key=lambda x: x.timestamp)
+    trip_data.sort(key=lambda x: x.timestamp)
+    drivingpoints: list[dict] = [point for data in trip_data if data.drivingPoints for points in [json.loads(data.drivingPoints)] for point in points]
     coordinates: list[tuple[float]] = []
-    for data in trip_data:
-        lat = data.lat
-        lon = data.lon
+    distance = 0
+    for data in drivingpoints:            
+        lat = data.get('lat')
+        lon = data.get('lon')
+        delta: float = data.get('distance_delta', 0)
+        distance += delta
         coordinates.append((lat, lon))
     
     map = folium.Map(
@@ -62,16 +68,7 @@ def debug_map(trip_id: str) -> folium.Map:
     timestamp = (trip_data[-1].timestamp - trip_data[0].timestamp) / 1000
     hours = int(timestamp // 3600)
     minutes = int(timestamp % 3600 // 60)
-    
-    import json
-
-    drivingpoints: list[dict] = [point for data in trip_data if data.drivingPoints for points in [json.loads(data.drivingPoints)] for point in points]
-
-    
-    distance = 0
-    for point in drivingpoints:
-        delta: float = point.get('distance_delta', 0)
-        distance += delta
+        
     '''
     [{"alt": 484.1669, 
     "distance_delta": 0.0, 
@@ -85,11 +82,12 @@ def debug_map(trip_id: str) -> folium.Map:
            
     length_str = f'{hours} hrs {minutes} min'
     mean_speed = round(mean([data.speed for data in trip_data]) * 3.6, 2)
-    usage = (trip_data[0].batteryLevel - trip_data[-1].batteryLevel)
+    usage = round(trip_data[0].batteryLevel - trip_data[-1].batteryLevel, 2)
     mean_usage = round(mean([data.power for data in trip_data]) / 1e+6, 2)
     mean_usage_kwh = round(((usage / (distance)) * 100), 2)
+    date = datetime.fromtimestamp(trip_data[0].timestamp / 1000).strftime('%d.%m.%Y %H:%M:%S')
     
-    trip_stats = {'length': length_str, 'distance': round((distance / 1000), 2), 'mean_speed': mean_speed, 'usage': usage, 'kW/100km': mean_usage, 'kWh/100km': mean_usage_kwh}
+    trip_stats = {'date': date ,'length': length_str, 'distance': round((distance / 1000), 2), 'mean_speed': mean_speed, 'usage': usage, 'kW/100km': mean_usage, 'kWh/100km': mean_usage_kwh}
     
     
     return render_template('map.html',
@@ -100,18 +98,22 @@ def debug_map(trip_id: str) -> folium.Map:
     
 
 
-@routes.route('/webhooks/<endpoint>', methods=['POST'])
+@routes.route('/webhooks/<endpoint>', methods=['POST', 'GET'])
 def webhooks(endpoint):
     user: User = User.query.filter_by(webhook=endpoint).first()
     if not user:
         return "Unauthorized", 401
+    
+    if request.method == 'GET':
+        return "Success", 200
+    
     user_settings: UserSettings = user.user_settings
     user_id: int = user.user_id
     api_key: str = request.args.get('api_key')
     
-    content_type = request.headers.get('Content-Type')
+    """content_type = request.headers.get('Content-Type')
     if not content_type == 'application/json':
-        return "Wrong content type", 401
+        return "Wrong content type", 401"""
     if not user or user.api_key != api_key:
         return "Unauthorized", 401
     last_entry: TripData = TripData.query.filter_by(user_id=user_id).order_by(TripData.row.desc()).first()

@@ -65,8 +65,8 @@ def create_line(trip, map: folium.Map) -> folium.Map:
         kilopower = round((power[i] / 1000000), 1)
         
         folium.PolyLine(locations=[start, end], color=color_map(speed),opacity=1, weight=3,tooltip=f'<p>Geschwindigkeit: {speed_calc} km/h <br />Batteriestand: {batterystate} % <br />Leistung: {kilopower} kW </p>', parse_html=True).add_to(map)
-    
-    '''folium.ColorLine(
+    '''
+    folium.ColorLine(
         positions = coordinates,
         colors = speeds, 
         colormap =  color_map, 

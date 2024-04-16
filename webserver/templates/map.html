@@ -3,7 +3,7 @@
 {% block content %}
 <div class="columns">
     <div class="column is-4 is-offset-4">
-        <p class="is-unselectable">Trip {{ trip.trip_name }}</p>
+        <p class="is-unselectable">{{ trip.trip_name }}</p>
     </div>
 </div>
 <div class="columns">
@@ -14,6 +14,9 @@
         <p class="subtitle">Statistiken</p>
         <div class="fixed-grid has-2-cols">
             <div class="grid">
+                <div class="cell has-text-right">Start:</div>
+                <div class="cell has-text-left">{{ trip_stats.get('date') }}</div>
+
                 <div class="cell has-text-right">Dauer:</div>
                 <div class="cell has-text-left">{{ trip_stats.get('length') }}</div>
                 
