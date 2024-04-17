@@ -17,14 +17,14 @@ def index():
     return render_template('index.html')
 
 
-@routes.route('/profile', methods=['GET', 'POST'])
+@routes.route('/settings', methods=['GET', 'POST'])
 @login_required
-def profile() -> str:
+def settings() -> str:
     user: User = current_user
     url: str = f'http://192.168.188.43:31777/webhooks/{user.webhook}?api_key={user.api_key}'
     trips: list[Trips] = user.trips
     trash = [trip for trip in trips if trip.trash]
-    return render_template('profile.html', user=user, trash=trash)
+    return render_template('settings.html', user=user, trash=trash)
 
 @routes.route('/trips', methods=['GET', 'POST'])
 @login_required
