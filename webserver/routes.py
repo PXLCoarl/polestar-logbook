@@ -97,7 +97,6 @@ def debug_map(trip_id: str) -> folium.Map:
     )
     
 
-
 @routes.route('/webhooks/<endpoint>', methods=['POST', 'GET'])
 def webhooks(endpoint):
     user: User = User.query.filter_by(webhook=endpoint).first()
@@ -151,48 +150,3 @@ def webhooks(endpoint):
     return "Success", 200
 
 
-@login_required
-@routes.route('/api/changename/<trip_id>', methods=['GET'])
-def changename(trip_id):
-    name: str = request.args.get('name')
-    
-    trip = db.session.query(Trips).filter(Trips.trip_id == trip_id).first()
-    if trip:
-        trip.trip_name = name
-        db.session.commit()
-        return redirect(url_for('routes.trips'))
-    else:
-        # Handle case where trip with given trip_id does not exist
-        return "Trip not found", 404
-   
-@login_required   
-@routes.route('/api/deletetrip/<trip_id>', methods=['GET'])
-def delete_trip(trip_id):
-    
-    trip = db.session.query(Trips).filter(Trips.trip_id == trip_id).first()
-    if not trip:
-        return redirect(url_for('routes.trips'))
-    
-    if not trip.trash:
-        trip.trash = True
-    else:
-        trip_data = trip.trip_data
-        for data in trip_data:
-            db.session.delete(data)
-        db.session.delete(trip)
-    db.session.commit()    
-    
-    return redirect(url_for('routes.trips'))
-
-@login_required
-@routes.route('/api/restoretrip/<trip_id>', methods=['GET'])
-def restore_trip(trip_id):
-    
-    trip = db.session.query(Trips).filter(Trips.trip_id == trip_id).first()
-    if not trip:
-        return redirect(url_for('routes.trips'))
-    
-    trip.trash = False
-    db.session.commit()
-    
-    return redirect(url_for('routes.trips'))

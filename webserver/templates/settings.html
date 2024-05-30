@@ -134,41 +134,43 @@
             </div>
             <div class="columns">
                 <div class="column is-half is-offset-one-quarter">
-                    <div class="field">
-                        <label class="label">Current password</label>
-                        <div class="control has-icons-left">
-                          <input class="input" type="password" placeholder="password">
-                          <span class="icon is-left">
-                            <i class="fas fa-lock"></i>
-                          </span>
+                    <form action='/api/changepassword' method="POST">
+                        <div class="field">
+                            <label class="label">Current password</label>
+                            <div class="control has-icons-left">
+                            <input class="input" type="password" name="current_password" id="current_password" placeholder="password">
+                            <span class="icon is-left">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            </div>
                         </div>
-                    </div>
-                    <hr>  
-                    <div class="field">
-                        <label class="label">New password</label>
-                        <div class="control has-icons-left">
-                          <input class="input" type="password" placeholder="password">
-                          <span class="icon is-left">
-                            <i class="fas fa-lock"></i>
-                          </span>
+                        <hr>  
+                        <div class="field">
+                            <label class="label">New password</label>
+                            <div class="control has-icons-left">
+                            <input class="input" type="password" name="new_password" id="new_password" placeholder="password">
+                            <span class="icon is-left">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">Confirm new password</label>
-                        <div class="control has-icons-left">
-                          <input class="input" type="password" placeholder="password">
-                          <span class="icon is-left">
-                            <i class="fas fa-lock"></i>
-                          </span>
+                        <div class="field">
+                            <label class="label">Confirm new password</label>
+                            <div class="control has-icons-left">
+                            <input class="input" type="password" name="confirm_new_password" id="confirm_new_password" placeholder="password">
+                            <span class="icon is-left">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field is-grouped is-grouped-right">
-                        <p class="control">
-                          <button class="button is-primary">
-                            Submit
-                          </button>
-                        </p>
-                    </div>
+                        <div class="field is-grouped is-grouped-right">
+                            <p class="control">
+                            <button class="button is-primary" id='submit_button'>
+                                Submit
+                            </button>
+                            </p>
+                        </div>
+                    </form>
                 </div>
             </div>
             `;
@@ -296,6 +298,34 @@
         WebhookText.classList.toggle('is-skeleton');
         WebhookText.classList.toggle('is-unselectable');
     }
+
+    function checkPasswords() {
+        const currentPassword = document.getElementById('current_password');
+        const newPassword = document.getElementById('new_password');
+        const confirmPassword = document.getElementById('confirm_new_password');
+        const submitButton = document.getElementById('submit_button');
+        if (newPassword.value == '') {
+            newPassword.classList.toggle('is-danger')
+        }
+
+
+        if (newPassword.value == confirmPassword.value) {
+            submitButton.disabled = false;
+        } else {
+            submitButton.disabled = true;
+        }
+    }
+    window.onload = function() {
+        document.getElementById('new_password').addEventListener('input', checkPasswords);
+        document.getElementById('confirm_new_password').addEventListener('input', checkPasswords);
+    }
 </script>
+
+<!--Todo:
+MAKE THIS WHOLE FILE MULTIPLE ROUTES
+WHY DID I DO IT LIKE THIS??
+THIS IS DUMB!
+-->
+
 
 {% endblock %}

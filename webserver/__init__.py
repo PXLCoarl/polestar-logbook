@@ -69,6 +69,8 @@ def webserver() -> Flask:
     app.register_blueprint(auth)
     from webserver.routes import routes
     app.register_blueprint(routes)
+    from webserver.api import api
+    app.register_blueprint(api, url_prefix='/api')
     
     with app.app_context():
         db.create_all()
